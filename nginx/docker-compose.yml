@@ -1,0 +1,46 @@
+version: '3'
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+#      - "8448:443"
+    environment:
+      - ENABLE_IPV6=true
+      - DHPARAM_GENERATION=false
+    volumes:
+      - ./certs:/etc/nginx/certs
+      - ./vhost:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - public_services
+
+  acme-companion:
+    image: nginxproxy/acme-companion
+    restart: unless-stopped
+    environment:
+      - DEFAULT_EMAIL=admin@namazso.eu
+      - NGINX_PROXY_CONTAINER=nginx_nginx-proxy_1
+    volumes:
+      - ./acme:/etc/acme.sh
+      - ./certs:/etc/nginx/certs
+      - ./vhost:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  whoami:
+    image: jwilder/whoami
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      - VIRTUAL_HOST=whoami.local
+      - VIRTUAL_PORT=8000
+
+
+networks:
+  public_services:
+    external: true

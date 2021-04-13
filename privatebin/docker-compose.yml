@@ -1,0 +1,37 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:10-alpine
+    restart: unless-stopped
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+    
+  privatebin:
+    image: privatebin/nginx-fpm-alpine
+    restart: unless-stopped
+#    logging:
+#      driver: none
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://127.0.0.1:8080/"]
+    volumes:
+      - ./privatebin-data:/srv/data
+      - ./conf.php:/srv/cfg/conf.php:ro
+    expose:
+      - "8080"
+    environment:
+      - VIRTUAL_PORT=8080
+      - VIRTUAL_HOST=bin.namazso.eu
+      - LETSENCRYPT_HOST=bin.namazso.eu
+    networks:
+      - default
+      - public_services
+
+networks:
+  public_services:
+    external: true

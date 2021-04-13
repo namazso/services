@@ -1,0 +1,42 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:10-alpine
+    restart: unless-stopped
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+    
+  lufi:
+    image: namazso/lufi
+    restart: unless-stopped
+    environment:
+      - contact="<a href='https://namazso.eu'>here</a>"
+      - report="abuse@namazso.eu"
+      - site_name="Lufi"
+      - url_length=8
+      - max_file_size=1048576000
+      - max_delay=1
+      - use_proxy=1
+      - allow_pwd=1
+    volumes:
+      - ./files:/files
+      - ./lufi.conf:/lufi/lufi.conf:ro
+    expose:
+      - "8081"
+    environment:
+      - VIRTUAL_PORT=8081
+      - VIRTUAL_HOST=lufi.namazso.eu
+      - LETSENCRYPT_HOST=lufi.namazso.eu
+    networks:
+      - default
+      - public_services
+
+networks:
+  public_services:
+    external: true

@@ -1,0 +1,59 @@
+version: '2.4'
+services:
+  postgres:
+    image: postgres:10-alpine
+    restart: unless-stopped
+    volumes:
+      - ./postgresdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: invidious
+      POSTGRES_PASSWORD: kemal
+      POSTGRES_USER: kemal
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kemal"]
+  invidious:
+    image: quay.io/invidious/invidious
+    restart: unless-stopped
+    mem_limit: 2048M
+    cpus: 4
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://127.0.0.1:3000/channel/namazso"]
+    logging:
+      driver: none
+    environment:
+      VIRTUAL_PORT: "3000"
+      VIRTUAL_HOST: "invidious.namazso.eu"
+      LETSENCRYPT_HOST: "invidious.namazso.eu"
+      # Adapted from ./config/config.yml
+      INVIDIOUS_CONFIG: |
+          channel_threads: 4
+          check_tables: true
+          feed_threads: 4
+          db:
+            user: kemal
+            password: kemal
+            host: postgres
+            port: 5432
+            dbname: invidious
+          login_enabled: false
+          registration_enabled: false
+          statistics_enabled: true
+          full_refresh: false
+          https_only: true
+          domain: invidious.namazso.eu
+          pool_size: 1000
+          external_port: 443
+          default_user_preferences:
+            dark_mode: true
+            quality: dash
+    depends_on:
+      - postgres
+    expose:
+      - "3000"
+    networks:
+      - default
+      - public_services
+
+networks:
+  public_services:
+    external: true
