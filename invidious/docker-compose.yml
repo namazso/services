@@ -45,7 +45,6 @@ services:
           external_port: 443
           default_user_preferences:
             dark_mode: true
-            quality: dash
     depends_on:
       - postgres
     expose:
