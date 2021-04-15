@@ -15,15 +15,8 @@ services:
   lufi:
     image: namazso/lufi
     restart: unless-stopped
-    environment:
-      - contact="<a href='https://namazso.eu'>here</a>"
-      - report="abuse@namazso.eu"
-      - site_name="Lufi"
-      - url_length=8
-      - max_file_size=1048576000
-      - max_delay=1
-      - use_proxy=1
-      - allow_pwd=1
+    depends_on:
+      - postgres
     volumes:
       - ./files:/files
       - ./lufi.conf:/lufi/lufi.conf:ro
