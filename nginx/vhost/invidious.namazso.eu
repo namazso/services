@@ -4,3 +4,13 @@ error_log stderr crit;
 location /robots.txt {
     return 301 https://namazso.eu/robots_services.txt;
 }
+location /privacy {
+    return 301 https://namazso.eu/privacy.html#invidious;
+}
+location /.+ {
+    limit_req zone=iv burst=20 nodelay;
+}
+location /api/.+ {
+    limit_req zone=ivapi burst=10 nodelay;
+    limit_req_status 429;
+}
