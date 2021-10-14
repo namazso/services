@@ -40,12 +40,11 @@ services:
           statistics_enabled: true
           full_refresh: false
           https_only: true
-          force_resolve: ipv6
           domain: invidious.namazso.eu
           pool_size: 1000
           external_port: 443
-          banner: "<center>Instance now uses anti-captcha. This costs me money, please consider donating: <a href='bitcoin:1N6UzYgzn3sLV33hB2iS3FvYLzD1G4CuS2'>BTC</a> <a href='monero:83sJ6GoeKf1U47vD9Tk6y2MEKJKxPJkECG3Ms7yzVGeiBYg2uYhBAUAZKNDH8VnAPGhwhZeqBnofDPgw9PiVtTgk95k53Rd'>XMR</a> <a href='https://www.buymeacoffee.com/namazso'>PayPal/CC</a></center>"
           captcha_key: nope
+          banner: "<center>Server migrated, sorry for downtime!</center>"
           default_user_preferences:
             dark_mode: true
     depends_on:
@@ -55,19 +54,7 @@ services:
     networks:
       default:
       public_services:
-      app_net:
-        ipv6_address: 2a02:c207:2051:189:8000::5
-    sysctls:
-      - "net.ipv6.conf.all.disable_ipv6=0"
 
 networks:
   public_services:
     external: true
-  app_net:
-    enable_ipv6: true
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 2a02:c207:2051:189:8000::/65
-          gateway: 2a02:c207:2051:189:8000::1

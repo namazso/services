@@ -2,7 +2,6 @@ version: '3'
 services:
   autoheal:
     image: willfarrell/autoheal
-    container_name: autoheal
     restart: unless-stopped
     environment:
       AUTOHEAL_CONTAINER_LABEL: all
